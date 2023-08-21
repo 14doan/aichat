@@ -36,3 +36,5 @@ next-env.d.ts
 
 # firebase service account
 serviceAccountKey.json
+
+.personalNotes.md
