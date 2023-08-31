@@ -2,9 +2,13 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow only authenticated content owners access
+    // Assign roles to all users and refine access based on user roles
     match /some_collection/{document} {
-      allow read, write: if request.auth != null && request.auth.uid == request.resource.data.author_uid
+     allow read: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "Reader"
+     allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "Writer"
+
+     // Note: Checking for roles in your database using `get` (as in the code
+     // above) or `exists` carry standard charges for read operations.
     }
   }
 }
