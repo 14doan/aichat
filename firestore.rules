@@ -5,17 +5,11 @@ service cloud.firestore {
 
 
  match /users/{userId}/chats/{chatId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
-
+  }}
     // Allow users to read and write their own user document
-match /chats/{chat}  {
-      allow read, write: if request.auth != null;
-    }
 
-    // Other collections and documents rules go here...
-  }
-}
 
 
 
