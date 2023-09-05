@@ -2,49 +2,16 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow users to read their own user document
+    // Allow users to read and write their own user document
     match /users/{userId} {
-      allow read, create, delete: if request.auth != null && request.auth.token.email == userId;
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Allow users to read messages in their own chats
-    match /users/{userId}/chats/{chatId} {
-      allow read, create, delete: if request.auth != null && request.auth.token.email == userId;
+    // Allow authenticated users to create new chat documents in their own "chats" subcollection
+    match /users/{userId}/chats/{document} {
+      allow create: if request.auth != null
+                    && request.auth.token.email == request.resource.data.userId
+                    && request.resource.data.createdAt != null;
     }
-
-    // Allow users to read messages within their own chats
-    match /users/{userId}/chats/{chatId}/messages/{messageId} {
-      allow read, create, delete: if request.auth != null && request.auth.token.email == userId;
-    }
-    
   }
 }
-
-
-
-// rules_version = '2';
-
-// service cloud.firestore {
-//   match /databases/{database}/documents {
-//     // Make sure the uid of the requesting user matches name of the user
-//     // document. The wildcard expression {userId} makes the userId variable
-//     // available in rules.
-//     match /{document=**} {
-//       allow read, update, delete: if request.auth != null;
-//       allow create: if request.auth != null;
-//     }
-//     match /users/{userId} {
-//       allow read, update, delete: if request.auth != null && request.auth.uid == userId;
-//       allow create: if request.auth != null;
-//     }
-
-//     match /users/{userId}/chats/{chatId} {
-//       allow read, update, delete: if request.auth != null && request.auth.uid == userId;
-//       allow create: if request.auth != null;
-//     }
-//      match /users/{userId}/chats/{chatId}/messages/{messsagesId} {
-//       allow read, update, delete: if request.auth != null && request.auth.uid == userId;
-//       allow create: if request.auth != null;
-//     }
-//   }
-// }
