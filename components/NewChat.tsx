@@ -30,7 +30,7 @@ export default function NewChat() {
     const chatDocRef = await addDoc(userChatsRef, {
       // Add chat data here
       createdAt: serverTimestamp(),
-      participants: [session.user.email], // Include the current user as a participant
+      participants: [session?.user?.email!], // Include the current user as a participant
     });
 
     // Redirect to the newly created chat using its document ID
